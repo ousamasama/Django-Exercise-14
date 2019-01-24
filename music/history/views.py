@@ -35,3 +35,24 @@ def add_artist(request):
         form = ArtistForm()
 
     return render(request, 'history/addartist.html', {'form': form})
+
+def add_song(request):
+    # if this is a POST request we need to process the form data
+    if request.method == 'POST':
+        # create a form instance and populate it with data from the request:
+        form = SongForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            song = Song()
+            song.song_name = form.cleaned_data['song_name']
+            song.save()
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect('/artists/')
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = SongForm()
+
+    return render(request, 'history/addsong.html', {'form': form})

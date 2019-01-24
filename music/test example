@@ -1,0 +1,95 @@
+#python manage.py test
+
+import unittest
+#testcase acts like a browser
+from django.test import TestCase
+from django.urls import reverse
+from .models import Artist
+
+#stuff to test
+#context: what we send to the template
+#content: the rendered html
+#response_codes
+
+#name your tests like this! test_foo
+
+#rule of thumb
+#separate testclass for each model or view
+#separate test method for each set of conditions you want ot test
+#
+
+class ArtistTest(TestCase):
+    def test_lists_artists(self):
+        new_artist = Artist.objects.create(
+            name="Suzy Sax",
+            birth_date="12/24/58",
+            biggest_hit="Honk Honk"
+        )
+
+        #issue a get request
+        #client is a dummy web browser
+        #reverse used to generate a url for given view
+        #dont have to hard code routes into code
+        response = self.client.get(reverse('history:artists'))
+
+        #check that the response is 200 ok
+        self.assertEqual(response.status_code, 200)
+
+        #check that rendered content contains 1 artists
+        #response.context is content variable passed to template
+        #we know id will be 1 because it is adding to fake db
+        #artist_list is key in view
+        self.assertEqual(len(response.context['artist_list']), 1)
+
+        # .encode converts from unicode to utf-8
+        #example:
+        #if string is python
+        #the encoded version is b'pyth\xc3\xb6n
+        #content is finished/ready to send to the browser html
+        self.assertIn(new_artist.name.encode(), response.content)
+
+    def test_get_artist_form(self):
+        response = self.client.get(reverse('history:artist_form'))
+
+
+        self.assertIn(
+            '<input type="text" name="name" maxxlength="100" required id="id_name">'.encode(),
+        )
+
+    def test_post_artist(self):
+        response = self.client.post(reverse('history:artist_form'), {'name': 'Bill Board',
+        'birth_date': '10/31/11', 'biggest_hit': 'So Blue'})
+
+        #getting 302 back because we have a success url and the view is redirecting
+        self.assertEqual(response.status_code, 302)
+
+    def text_get_artist_detail(self):
+         new_artist = Artist.objects.create(
+            name="Suzy Sax",
+            birth_date="12/24/58",
+            biggest_hit="Honk Honk"
+        )
+
+        # .get is requesting page
+        response = self.client.get(reverse('history:artist_detail', args=(1,)))
+        #name of context data when you dont give it a name is object_list
+        self.assertEqual(response.context["artist_detail"].name, new_artist.name)
+
+    
+album = models.ManytoManyField(Album, blank=true)
+
+def artistDetail(request, artist_id):
+    artist = get_object_or_404(Artist, pk=artist_id)
+    context = {"artist"}: artist
+
+    return ...
+
+    many to many creates join table
+
+#detail for many to many
+for song in artist.song_set.all
+    song.title
+    if song.albums.album
+        song.albums.all|pluralize
+        for album in song.albuns.all
+            albun.title, album.year_released

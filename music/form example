@@ -1,0 +1,34 @@
+action is route it posts to
+polls vote route example under urlpatterns
+path('songs/add', views.addSong, name='song_form')
+
+<form action="/song/add" method="post">
+    {% csrf_token %} {{ form }}
+    <input type="text" name="test">
+    <unput type="submit" value="Save Artist">
+</form>
+
+<form action="{% url 'history:postSong' %}" method="post">
+    {% csrf_token %} {{ form }}
+    <input type="text" name="test">
+    <input type="text" name="artist">
+    <unput type="submit" value="Save Artist">
+</form>
+
+def addSong(request):
+    print(request.POST["test"])
+    newMsg = request.POST["test"]
+    artist = request.POST["artist]
+    
+    
+    can be this(lopnghand way)
+    s = Song(message=newMsg)
+    s.save()
+    a = Artist.objects.get(name=artist)
+
+    or this(shorthand way)
+    Songs.objects.create({
+        "message": newMsg,
+        "artist": a
+    })
+
